@@ -1,12 +1,14 @@
 let form = document.querySelector('form');
+let inp = document.querySelector('input');
 
 document.addEventListener('DOMContentLoaded', localGet);
+
 
 form.addEventListener('submit', (e) => {
 
     e.preventDefault();
-    let inp = document.querySelector('input');
-    showDisplay(inp);
+    localAdd(inp.value);
+    showDisplay(inp.value);
 
 
     //!bunlar class elave elemeyin yollaridir
@@ -17,16 +19,8 @@ form.addEventListener('submit', (e) => {
     // console.log(newLi.getAttribute('class'));
     //-----------------------------------------------------
 
-
-
-
-
-
-
-
-
-
 })
+
 
 function localAdd(val) {
     let todos_arr;
@@ -37,7 +31,7 @@ function localAdd(val) {
         todos_arr = JSON.parse(localStorage.getItem('todo'));
 
     }
-    console.log(todos_arr);
+    // console.log(todos_arr);
     todos_arr.push(val);
 
     localStorage.setItem('todo', JSON.stringify(todos_arr));
@@ -46,38 +40,45 @@ function localAdd(val) {
 
 function localGet() {
     let todos_arr = JSON.parse(localStorage.getItem('todo'));
+    if (todos_arr === null) {
+        //ne yazim bilmedim
+    }
+    else {
 
-    todos_arr.forEach(item => {
-        console.log(item);
-    });
+        todos_arr.forEach(item => {
+            showDisplay(item);
+        });
+    }
 }
 
-function showDisplay(inp) {
-    let ul = document.querySelector('ul');
-    let newLi = document.createElement('li');
-    let newBtn = document.createElement('button');
-    newBtn.textContent = 'X';
-    newBtn.classList.add('btn', 'btn-danger', 'btn-sm');
-
-
-    if (inp.value.trim() === "" || inp.value === null || inp.value === undefined) {
+function showDisplay(val) {
+    if (!val) {
         inp.classList.add('is-invalid');
     }
     else {
-        newLi.textContent = inp.value;
+        let ul = document.querySelector('ul');
+        let newLi = document.createElement('li');
+        let newBtn = document.createElement('button');
+        newBtn.textContent = 'X';
+        newBtn.classList.add('btn', 'btn-danger', 'btn-sm');
+        newLi.textContent = val;
         newLi.classList.add('list-group-item', 'd-flex', 'justify-content-between')
         ul.append(newLi); //appendChild da bir dene elave elemek olur appendChildda coxlu ola biler
         newLi.append(newBtn);
-        localAdd(inp.value);
         inp.value = "";
-        inp.classList.remove('is-invalid')
-
+        // inp.classList.remove('is-invalid');
+        //silmek funksiysi
+        newBtn.addEventListener('click', (e) => {
+            let clickElement = e.target;
+            clickElement.parentElement.remove();
+            let todos_arr = JSON.parse(localStorage.getItem('todo'));
+            let new_text = clickElement.parentElement.textContent;
+            let new_text_sbst = new_text.substr(0,new_text.length - 1);
+            let ind = todos_arr.indexOf(new_text_sbst);
+            todos_arr.splice(ind,1);
+            localStorage.setItem('todo', JSON.stringify(todos_arr));
+        });
     }
 
-    //silmek funksiysi
-    newBtn.addEventListener('click', (e) => {
-        let clickElement = e.target;
-        clickElement.parentElement.remove();
 
-    })
 }
